@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Owner Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="nav-logo" onclick="navigateTo('home')">
+                    <i class="fas fa-utensils"></i>
+                    <span>MessMate</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button onclick="showAddDishModal()" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Dish
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <div id="mess-owner-dashboard" class="page active">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1><i class="fas fa-store"></i> Mess Dashboard</h1>
+                        <p>Manage your mess and track performance</p>
+                    </div>
+                    <button onclick="showAddDishModal()" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Dish
+                    </button>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-orders-stat">0</h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-revenue-stat">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+                        <div class="stat-info">
+                            <h3 id="total-dishes-stat">0</h3>
+                            <p>Menu Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-star"></i></div>
+                        <div class="stat-info">
+                            <h3 id="avg-rating-stat">0.0</h3>
+                            <p>Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-utensils"></i> Your Menu</h2>
+                            <div class="section-actions">
+                                <button onclick="showAddDishModal()" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-plus"></i> Add Dish
+                                </button>
+                            </div>
+                        </div>
+                        <div id="owner-dishes" class="owner-dishes-grid"></div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-clock"></i> Recent Orders</h2>
+                        </div>
+                        <div id="owner-orders" class="owner-orders-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="add-dish-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="dish-modal-title"><i class="fas fa-plus"></i> Add New Dish</h2>
+                <span class="close" onclick="closeModal('add-dish-modal')">&times;</span>
+            </div>
+            <form id="add-dish-form" class="dish-form">
+                <input type="hidden" id="edit-dish-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-utensils"></i> Dish Name</label>
+                        <input type="text" id="dish-name" required placeholder="Enter dish name">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Price</label>
+                        <input type="number" id="dish-price" required min="1" placeholder="Enter price">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="dish-description" required placeholder="Describe your dish"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Image URL</label>
+                    <input type="url" id="dish-image" required placeholder="Enter image URL">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-list"></i> Cuisine Type</label>
+                        <select id="dish-cuisine" required>
+                            <option value="maharashtrian">Maharashtrian</option>
+                            <option value="north-indian">North Indian</option>
+                            <option value="south-indian">South Indian</option>
+                            <option value="punjabi">Punjabi</option>
+                        </select>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dish-veg">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-leaf"></i> Vegetarian
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dish-available" checked>
+                            <span class="checkmark"></span>
+                            <i class="fas fa-check"></i> Available
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Save Dish
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

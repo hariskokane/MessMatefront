@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Mess Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="nav-logo" onclick="navigateTo('home')">
+                    <i class="fas fa-utensils"></i>
+                    <span>MessMate</span>
+                </div>
+                <div class="location-selector" onclick="showLocationModal()">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="location-info">
+                        <span class="location-label">Deliver to</span>
+                        <span id="current-city" class="current-location">Select City</span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <div class="nav-center">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search for messes, dishes, cuisines...">
+                    <div id="search-suggestions" class="search-suggestions"></div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="cart-btn" class="cart-btn hidden">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count">0</span>
+                    </button>
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button onclick="showLogin()" class="btn btn-outline">Login</button>
+                        <button onclick="showSignup()" class="btn btn-primary">Sign Up</button>
+                    </div>
+                    <div id="user-info" class="user-info hidden">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <span id="user-name"></span>
+                            <div class="user-menu-dropdown">
+                                <a href="#" onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</a>
+                                <a href="#" onclick="navigateTo('orders')"><i class="fas fa-receipt"></i> Orders</a>
+                                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <div id="mess-profile-page" class="page active">
+            <div class="container">
+                <div id="mess-profile-content">
+                    <div class="text-center" style="padding: 2rem; color: var(--text-muted);">Loading menu...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-star"></i> Write a Review</h2>
+                <span class="close" onclick="closeModal('review-modal')">&times;</span>
+            </div>
+            <form id="review-form" class="review-form">
+                <input type="hidden" id="review-mess-id">
+                <div class="form-group">
+                    <label>Your Rating</label>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <input type="hidden" id="rating-value" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment"></i> Your Review</label>
+                    <textarea id="review-comment" required placeholder="Share your experience..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="location-modal" class="modal location-modal">
+        <div class="modal-content location-modal-content">
+            <div class="location-header">
+                <h2><i class="fas fa-map-marker-alt"></i> Select Your City</h2>
+                <p>Choose your location to discover amazing home-cooked meals near you</p>
+            </div>
+            <div class="cities-grid">
+                <div class="city-card" onclick="selectCity('sangli')">
+                    <div class="city-icon">🏛️</div>
+                    <h3>Sangli</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('miraj')">
+                    <div class="city-icon">🏰</div>
+                    <h3>Miraj</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('ashta')">
+                    <div class="city-icon">🌾</div>
+                    <h3>Ashta</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('islampur')">
+                    <div class="city-icon">🕌</div>
+                    <h3>Islampur</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('kolhapur')">
+                    <div class="city-icon">👑</div>
+                    <h3>Kolhapur</h3>
+                    <p>8 Messes Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="script.js"></script>
+    <script>
+        (function(){
+            const cartBtn = document.getElementById('cart-btn');
+            if (cartBtn) cartBtn.onclick = function(){ navigateTo('cart'); };
+        })();
+    </script>
+</body>
+</html>

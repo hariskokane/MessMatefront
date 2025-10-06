@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Authentic Home-Cooked Food Delivery</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="light-theme">
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="nav-logo" onclick="goHome()">
+                <i class="fas fa-utensils"></i>
+                <span>MessMate</span>
+            </div>
+            <div class="loading-spinner"></div>
+            <p>Loading delicious experiences...</p>
+        </div>
+    </div>
+
+    <!-- Location Selection Modal -->
+    <div id="location-modal" class="modal location-modal">
+        <div class="modal-content location-modal-content">
+            <div class="location-header">
+                <h2><i class="fas fa-map-marker-alt"></i> Select Your City</h2>
+                <p>Choose your location to discover amazing home-cooked meals near you</p>
+            </div>
+            <div class="cities-grid">
+                <div class="city-card" onclick="selectCity('sangli')">
+                    <div class="city-icon">🏛️</div>
+                    <h3>Sangli</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('miraj')">
+                    <div class="city-icon">🕌</div>
+                    <h3>Miraj</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('ashta')">
+                    <div class="city-icon">🌾</div>
+                    <h3>Ashta</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('islampur')">
+                    <div class="city-icon">🏰</div>
+                    <h3>Islampur</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('kolhapur')">
+                    <div class="city-icon">👑</div>
+                    <h3>Kolhapur</h3>
+                    <p>8 Messes Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <i class="fas fa-utensils"></i>
+                    <span>MessMate</span>
+                </div>
+                <div class="location-selector" onclick="showLocationModal()">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="location-info">
+                        <span class="location-label">Deliver to</span>
+                        <span id="current-city" class="current-location">Select City</span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <div class="nav-center">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search for messes, dishes, cuisines...">
+                    <div id="search-suggestions" class="search-suggestions"></div>
+                </div>
+            </div>
+
+            <div class="nav-right">
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="map-toggle" class="icon-btn hidden" title="Toggle Map View">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <button id="cart-btn" class="cart-btn hidden" onclick="showCart()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count">0</span>
+                    </button>
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button onclick="showLogin()" class="btn btn-outline">Login</button>
+                        <button onclick="showSignup()" class="btn btn-primary">Sign Up</button>
+                    </div>
+                    <div id="user-info" class="user-info hidden">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <span id="user-name"></span>
+                            <div class="user-menu-dropdown">
+                                <a href="#" onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</a>
+                                <a href="#" onclick="navigateTo('orders')"><i class="fas fa-receipt"></i> Orders</a>
+                                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>Craving <span class="highlight">Home-Cooked</span> Food?</h1>
+                        <p>Discover authentic, homestyle meals from trusted local messes in Maharashtra. Fresh, affordable, and made with love.</p>
+                        <div class="hero-stats">
+                            <div class="stat">
+                                <span class="stat-number">36+</span>
+                                <span class="stat-label">Messes</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">5</span>
+                                <span class="stat-label">Cities</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number">200+</span>
+                                <span class="stat-label">Dishes</span>
+                            </div>
+                        </div>
+                        <div class="hero-actions">
+                            <button onclick="navigateTo('browse')" class="btn btn-primary btn-lg">
+                                <i class="fas fa-utensils"></i>
+                                Explore Messes
+                            </button>
+                            <button onclick="showLocationModal()" class="btn btn-outline btn-lg">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Change Location
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="hero-image-container">
+                            <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg" alt="Delicious home-cooked thali" class="hero-image">
+                            <div class="floating-card card-1">
+                                <i class="fas fa-star"></i>
+                                <span>4.8 Rating</span>
+                            </div>
+                            <div class="floating-card card-2">
+                                <i class="fas fa-clock"></i>
+                                <span>30 min delivery</span>
+                            </div>
+                            <div class="floating-card card-3">
+                                <i class="fas fa-leaf"></i>
+                                <span>Fresh & Healthy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Section -->
+            <section class="featured-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Featured Messes</h2>
+                        <p>Handpicked favorites from your city</p>
+                    </div>
+                    <div id="featured-messes" class="featured-grid">
+                        <!-- Featured messes will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Section -->
+            <section class="categories-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Browse by Cuisine</h2>
+                        <p>Explore authentic flavors from different regions</p>
+                    </div>
+                    <div class="categories-grid">
+                        <div class="category-card" onclick="filterByCuisine('maharashtrian')">
+                            <div class="category-icon">🍛</div>
+                            <h3>Maharashtrian</h3>
+                            <p>Traditional thalis & more</p>
+                        </div>
+                        <div class="category-card" onclick="filterByCuisine('north-indian')">
+                            <div class="category-icon">🍜</div>
+                            <h3>North Indian</h3>
+                            <p>Rich curries & breads</p>
+                        </div>
+                        <div class="category-card" onclick="filterByCuisine('south-indian')">
+                            <div class="category-icon">🥞</div>
+                            <h3>South Indian</h3>
+                            <p>Dosas, idlis & more</p>
+                        </div>
+                        <div class="category-card" onclick="filterByCuisine('punjabi')">
+                            <div class="category-icon">🫓</div>
+                            <h3>Punjabi</h3>
+                            <p>Hearty & flavorful</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="features-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2>Why Choose MessMate?</h2>
+                        <p>Your trusted partner for authentic home-cooked meals</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <h3>Home-Style Cooking</h3>
+                            <p>Authentic recipes passed down through generations, cooked with love and care</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Quality Assured</h3>
+                            <p>Verified messes with high hygiene standards and fresh ingredients</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3>Quick Delivery</h3>
+                            <p>Fast and reliable delivery to bring hot meals to your doorstep</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <h3>Affordable Prices</h3>
+                            <p>Delicious meals at pocket-friendly prices, perfect for daily dining</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Browse Page -->
+        <div id="browse-page" class="page">
+            <div class="container">
+                <div class="browse-header">
+                    <div class="browse-title">
+                        <h1>Messes in <span id="browse-city-name">Your City</span></h1>
+                        <p id="browse-mess-count">Discover amazing home-cooked meals</p>
+                    </div>
+                    <div class="view-toggles">
+                        <button id="list-view-btn" class="view-btn active" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button id="map-view-btn" class="view-btn" onclick="toggleView('map')">
+                            <i class="fas fa-map"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="browse-filters">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="setActiveFilter('all')">All</button>
+                        <button class="filter-tab" onclick="setActiveFilter('veg')">Vegetarian</button>
+                        <button class="filter-tab" onclick="setActiveFilter('non-veg')">Non-Veg</button>
+                        <button class="filter-tab" onclick="setActiveFilter('featured')">Featured</button>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="cuisine-filter" onchange="applyFilters()">
+                            <option value="all">All Cuisines</option>
+                            <option value="maharashtrian">Maharashtrian</option>
+                            <option value="north-indian">North Indian</option>
+                            <option value="south-indian">South Indian</option>
+                            <option value="punjabi">Punjabi</option>
+                        </select>
+                        <select id="sort-filter" onchange="applyFilters()">
+                            <option value="rating">Sort by Rating</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="browse-content">
+                    <div id="list-view" class="list-view active">
+                        <div id="messes-grid" class="messes-grid">
+                            <!-- Messes will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div id="map-view" class="map-view">
+                        <div id="map-container" class="map-container">
+                            <div id="mess-map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mess Profile Page -->
+        <div id="mess-profile-page" class="page">
+            <div class="container">
+                <div id="mess-profile-content">
+                    <!-- Mess profile will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Cart Page -->
+        <div id="cart-page" class="page">
+            <div class="container">
+                <div class="cart-header">
+                    <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+                    <button onclick="showPage('browse')" class="btn btn-outline">
+                        <i class="fas fa-plus"></i> Add More Items
+                    </button>
+                </div>
+                <div id="cart-content" class="cart-content">
+                    <!-- Cart content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Page -->
+        <div id="orders-page" class="page">
+            <div class="container">
+                <div class="orders-header">
+                    <h1><i class="fas fa-receipt"></i> Your Orders</h1>
+                    <div class="order-filters">
+                        <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
+                        <button class="filter-btn" onclick="filterOrders('active')">Active</button>
+                        <button class="filter-btn" onclick="filterOrders('completed')">Completed</button>
+                    </div>
+                </div>
+                <div id="orders-content" class="orders-content">
+                    <!-- Orders will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div id="profile-page" class="page">
+            <div class="container">
+                <div class="profile-header">
+                    <h1><i class="fas fa-user"></i> My Profile</h1>
+                </div>
+                <div class="profile-content">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div id="profile-info" class="profile-info">
+                            <!-- Profile info will be populated by JavaScript -->
+                        </div>
+                        <button onclick="editProfile()" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mess Owner Dashboard -->
+        <div id="mess-owner-dashboard" class="page">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div class="dashboard-title">
+                        <h1><i class="fas fa-store"></i> Mess Dashboard</h1>
+                        <p>Manage your mess and track performance</p>
+                    </div>
+                    <button onclick="showAddDishModal()" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add New Dish
+                    </button>
+                </div>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-orders-stat">0</h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-revenue-stat">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-dishes-stat">0</h3>
+                            <p>Menu Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="avg-rating-stat">0.0</h3>
+                            <p>Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-utensils"></i> Your Menu</h2>
+                            <div class="section-actions">
+                                <button onclick="showAddDishModal()" class="btn btn-outline btn-sm">
+                                    <i class="fas fa-plus"></i> Add Dish
+                                </button>
+                            </div>
+                        </div>
+                        <div id="owner-dishes" class="owner-dishes-grid">
+                            <!-- Owner's dishes will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-clock"></i> Recent Orders</h2>
+                        </div>
+                        <div id="owner-orders" class="owner-orders-list">
+                            <!-- Owner's orders will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Enhanced Modals -->
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+                <span class="close" onclick="closeModal('login-modal')">&times;</span>
+            </div>
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            <div class="auth-footer">
+                <p>Don't have an account? 
+                    <a href="#" onclick="closeModal('login-modal'); showSignup()">Sign up here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-plus"></i> Join MessMate</h2>
+                <span class="close" onclick="closeModal('signup-modal')">&times;</span>
+            </div>
+            <form id="signup-form" class="auth-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user-tag"></i> I am a</label>
+                    <select id="user-type" required onchange="toggleMessOwnerFields()">
+                        <option value="">Select user type</option>
+                        <option value="customer">Customer</option>
+                        <option value="mess_owner">Mess Owner</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="signup-name" required placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="signup-email" required placeholder="Enter your email">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="signup-password" required placeholder="Create password">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Phone</label>
+                        <input type="tel" id="signup-phone" required placeholder="Enter phone number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-map-marker-alt"></i> Address</label>
+                    <textarea id="signup-address" required placeholder="Enter your complete address"></textarea>
+                </div>
+                <div id="mess-owner-fields" class="mess-owner-fields hidden">
+                    <div class="form-group">
+                        <label><i class="fas fa-store"></i> Mess Name</label>
+                        <input type="text" id="mess-name" placeholder="Enter your mess name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Operating Hours</label>
+                            <input type="text" id="operating-hours" placeholder="e.g., 7:00 AM - 10:00 PM">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-utensils"></i> Cuisines</label>
+                            <input type="text" id="mess-cuisines" placeholder="e.g., North Indian, Maharashtrian">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? 
+                    <a href="#" onclick="closeModal('signup-modal'); showLogin()">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Dish Modal -->
+    <div id="add-dish-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="dish-modal-title"><i class="fas fa-plus"></i> Add New Dish</h2>
+                <span class="close" onclick="closeModal('add-dish-modal')">&times;</span>
+            </div>
+            <form id="add-dish-form" class="dish-form">
+                <input type="hidden" id="edit-dish-id">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-utensils"></i> Dish Name</label>
+                        <input type="text" id="dish-name" required placeholder="Enter dish name">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Price</label>
+                        <input type="number" id="dish-price" required min="1" placeholder="Enter price">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-align-left"></i> Description</label>
+                    <textarea id="dish-description" required placeholder="Describe your dish"></textarea>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-image"></i> Image URL</label>
+                    <input type="url" id="dish-image" required placeholder="Enter image URL">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label><i class="fas fa-list"></i> Cuisine Type</label>
+                        <select id="dish-cuisine" required>
+                            <option value="maharashtrian">Maharashtrian</option>
+                            <option value="north-indian">North Indian</option>
+                            <option value="south-indian">South Indian</option>
+                            <option value="punjabi">Punjabi</option>
+                        </select>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dish-veg">
+                            <span class="checkmark"></span>
+                            <i class="fas fa-leaf"></i> Vegetarian
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dish-available" checked>
+                            <span class="checkmark"></span>
+                            <i class="fas fa-check"></i> Available
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-save"></i> Save Dish
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-star"></i> Write a Review</h2>
+                <span class="close" onclick="closeModal('review-modal')">&times;</span>
+            </div>
+            <form id="review-form" class="review-form">
+                <input type="hidden" id="review-mess-id">
+                <div class="form-group">
+                    <label>Your Rating</label>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <input type="hidden" id="rating-value" required>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-comment"></i> Your Review</label>
+                    <textarea id="review-comment" required placeholder="Share your experience..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content checkout-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Checkout</h2>
+                <span class="close" onclick="closeModal('checkout-modal')">&times;</span>
+            </div>
+            <div id="checkout-content" class="checkout-content">
+                <!-- Checkout content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Convert navbar buttons to use multi-page navigation
+        (function(){
+            const cartBtn = document.getElementById('cart-btn');
+            if (cartBtn) {
+                cartBtn.onclick = function(){ navigateTo('cart'); };
+            }
+        })();
+        // Fallback: ensure loading screen hides on window load
+        window.addEventListener('load', function() {
+            var loader = document.getElementById('loading-screen');
+            if (loader) {
+                loader.classList.add('hide');
+                setTimeout(function(){ loader.style.display = 'none'; }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

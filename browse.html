@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Browse</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="light-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="nav-logo" onclick="navigateTo('home')">
+                    <i class="fas fa-utensils"></i>
+                    <span>MessMate</span>
+                </div>
+                <div class="location-selector" onclick="showLocationModal()">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="location-info">
+                        <span class="location-label">Deliver to</span>
+                        <span id="current-city" class="current-location">Select City</span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <div class="nav-center">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="global-search" placeholder="Search for messes, dishes, cuisines...">
+                    <div id="search-suggestions" class="search-suggestions"></div>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="map-toggle" class="icon-btn" title="Toggle Map View">
+                        <i class="fas fa-map"></i>
+                    </button>
+                    <button id="cart-btn" class="cart-btn hidden">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cart-count">0</span>
+                    </button>
+                    <div id="auth-buttons" class="auth-buttons">
+                        <button onclick="showLogin()" class="btn btn-outline">Login</button>
+                        <button onclick="showSignup()" class="btn btn-primary">Sign Up</button>
+                    </div>
+                    <div id="user-info" class="user-info hidden">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <span id="user-name"></span>
+                            <div class="user-menu-dropdown">
+                                <a href="#" onclick="navigateTo('profile')"><i class="fas fa-user"></i> Profile</a>
+                                <a href="#" onclick="navigateTo('orders')"><i class="fas fa-receipt"></i> Orders</a>
+                                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <div id="browse-page" class="page active">
+            <div class="container">
+                <div class="browse-header">
+                    <div class="browse-title">
+                        <h1>Messes in <span id="browse-city-name">Your City</span></h1>
+                        <p id="browse-mess-count">Discover amazing home-cooked meals</p>
+                    </div>
+                    <div class="view-toggles">
+                        <button id="list-view-btn" class="view-btn active" onclick="toggleView('list')">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button id="map-view-btn" class="view-btn" onclick="toggleView('map')">
+                            <i class="fas fa-map"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="browse-filters">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="setActiveFilter('all')">All</button>
+                        <button class="filter-tab" onclick="setActiveFilter('veg')">Vegetarian</button>
+                        <button class="filter-tab" onclick="setActiveFilter('non-veg')">Non-Veg</button>
+                        <button class="filter-tab" onclick="setActiveFilter('featured')">Featured</button>
+                    </div>
+                    <div class="filter-controls">
+                        <select id="cuisine-filter" onchange="applyFilters()">
+                            <option value="all">All Cuisines</option>
+                            <option value="maharashtrian">Maharashtrian</option>
+                            <option value="north-indian">North Indian</option>
+                            <option value="south-indian">South Indian</option>
+                            <option value="punjabi">Punjabi</option>
+                        </select>
+                        <select id="sort-filter" onchange="applyFilters()">
+                            <option value="rating">Sort by Rating</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="name">Name A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="browse-content">
+                    <div id="list-view" class="list-view active">
+                        <div id="messes-grid" class="messes-grid"></div>
+                        <script>
+                            // Ensure clicking a mess opens mess.html with correct id
+                            document.addEventListener('click', function(e){
+                                const card = e.target.closest && e.target.closest('.mess-card');
+                                if (card && card.getAttribute('onclick')) {
+                                    // existing inline onclick will run; this is a safety net
+                                }
+                            });
+                        </script>
+                    </div>
+                    <div id="map-view" class="map-view">
+                        <div id="map-container" class="map-container">
+                            <div id="mess-map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="location-modal" class="modal location-modal">
+        <div class="modal-content location-modal-content">
+            <div class="location-header">
+                <h2><i class="fas fa-map-marker-alt"></i> Select Your City</h2>
+                <p>Choose your location to discover amazing home-cooked meals near you</p>
+            </div>
+            <div class="cities-grid">
+                <div class="city-card" onclick="selectCity('sangli')">
+                    <div class="city-icon">🏛️</div>
+                    <h3>Sangli</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('miraj')">
+                    <div class="city-icon">🏰</div>
+                    <h3>Miraj</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('ashta')">
+                    <div class="city-icon">🌾</div>
+                    <h3>Ashta</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('islampur')">
+                    <div class="city-icon">🕌</div>
+                    <h3>Islampur</h3>
+                    <p>7 Messes Available</p>
+                </div>
+                <div class="city-card" onclick="selectCity('kolhapur')">
+                    <div class="city-icon">👑</div>
+                    <h3>Kolhapur</h3>
+                    <p>8 Messes Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="script.js"></script>
+    <script>
+        (function(){
+            const cartBtn = document.getElementById('cart-btn');
+            if (cartBtn) cartBtn.onclick = function(){ navigateTo('cart'); };
+        })();
+    </script>
+</body>
+</html>

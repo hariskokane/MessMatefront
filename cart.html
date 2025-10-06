@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessMate - Cart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="nav-logo" onclick="navigateTo('home')">
+                    <i class="fas fa-utensils"></i>
+                    <span>MessMate</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <div id="cart-page" class="page active">
+            <div class="container">
+                <div class="cart-header">
+                    <h1><i class="fas fa-shopping-cart"></i> Your Cart</h1>
+                    <button onclick="navigateTo('browse')" class="btn btn-outline">
+                        <i class="fas fa-plus"></i> Add More Items
+                    </button>
+                </div>
+                <div id="cart-content" class="cart-content"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content checkout-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-credit-card"></i> Checkout</h2>
+                <span class="close" onclick="closeModal('checkout-modal')">&times;</span>
+            </div>
+            <div id="checkout-content" class="checkout-content"></div>
+        </div>
+    </div>
+
+    <div id="notification-container" class="notification-container"></div>
+
+    <script src="script.js"></script>
+    <script>
+        // Ensure cart renders immediately on page load
+        window.addEventListener('DOMContentLoaded', function(){
+            if (typeof loadCart === 'function') loadCart();
+        });
+    </script>
+</body>
+</html>
